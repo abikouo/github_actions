@@ -464,4 +464,5 @@ if __name__ == "__main__":
 
     egs = ElGrandeSeparator(collections, args.total_jobs)
     output = egs.output()
-    print("test_targets=%s" % json.dumps(output))
+    output = json.dumps(output) if output else ""
+    print("test_targets=%s" % output)
