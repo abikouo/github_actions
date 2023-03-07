@@ -362,7 +362,7 @@ class ElGrandeSeparator:
             for b in self.build_up_batches(slots, c):
                 batches.append(b)
         trace_content(batches)
-        return {x: " ".join(y) for x,y in batches}
+        return ";".join([f"{x}:{','.join(y)}" for x,y in batches])
 
     def build_up_batches(self, slots, c):
         if c.test_groups is None:
@@ -464,5 +464,4 @@ if __name__ == "__main__":
 
     egs = ElGrandeSeparator(collections, args.total_jobs)
     output = egs.output()
-    output = json.dumps(output) if output else ""
     print("test_targets=%s" % output)
