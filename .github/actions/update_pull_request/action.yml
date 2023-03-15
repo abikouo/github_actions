@@ -44,18 +44,18 @@ runs:
         python-version: '3.9'
 
     - name: Install required python librairies
-      run: pip install -U ${{ inputs.python_lib }}
+      run: pip install -U ${{ inputs.python_libs }}
       shell: bash
       if: inputs.python_libs != ''
 
     - name: Download python script
       run: >-
-        curl -o gha_update_repository.py ${{ inputs.python_executable_url }}
+        curl -o /tmp/gha_update_repository.py ${{ inputs.python_executable_url }}
       shell: bash
 
     - name: Execute python script
       run: >-
-        python gha_update_repository.py
+        python /tmp/gha_update_repository.py
       shell: bash
 
     - name: commit and push changes
