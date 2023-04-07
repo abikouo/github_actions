@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Update aws user-agent variable
-        uses: abikouo/github_actions/.github/actions/update_pull_request@automate_aws_user_agent_variable
+        uses: abikouo/github_actions/.github/actions/automate_changes@automate_aws_user_agent_variable
         with:
           commit_message: 'update aws user-agent variable with version from galaxy.yml'
           python_libs: 'pyyaml'
@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Update collection tests constraints
-        uses: abikouo/github_actions/.github/actions/update_pull_request@automate_aws_user_agent_variable
+        uses: abikouo/github_actions/.github/actions/automate_changes@automate_aws_user_agent_variable
         with:
           commit_message: 'update botocore and boto3 tests constraints'
           python_executable_url: 'https://raw.githubusercontent.com/abikouo/github_actions/automate_aws_user_agent_variable/.github/scripts/update_aws_boto_constraints.py'

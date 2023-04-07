@@ -1,4 +1,4 @@
-name: update pull request
+name: automated changes
 description: |
   checkout pull request, run provided script and push back changes
   The action expects a python script to be executed
