@@ -5,17 +5,11 @@ description: |
 
 inputs:
   python_libs:
-    description: |
-      Required librairies to execute the python script
-      for example 'pyyaml urllib'
-    required: false
-    default: ''
+    description: Required librairies to execute the python script for example 'pyyaml urllib'
   python_executable_url:
     description: URL of the script to download to update the repository
-    required: true
   commit_message:
     description: commit message
-    required: false
     default: Apply automatic changes
   file_pattern:
     description: File pattern used for `git add`. For example `src/*.js`
@@ -52,11 +46,13 @@ runs:
       run: >-
         curl -o /tmp/gha_update_repository.py ${{ inputs.python_executable_url }}
       shell: bash
+      if: inputs.python_executable_url != ''
 
     - name: Execute python script
       run: >-
         python /tmp/gha_update_repository.py
       shell: bash
+      if: inputs.python_executable_url != ''
 
     - name: commit and push changes
       id: commit
