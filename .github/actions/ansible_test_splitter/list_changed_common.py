@@ -38,7 +38,12 @@ def run_command(command: str, chdir: Optional[PosixPath]) -> str:
     with subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=chdir
     ) as proc:
-        out, _ = proc.communicate()
+        out, err = proc.communicate()
+        print(
+            f"-- Shell command [{command}] ----\n",
+            f"** stdout ***{out.decode()}",
+            f"** stderr ***{err.decode()}",
+        )
         return out.decode()
 
 
@@ -177,6 +182,7 @@ class WhatHaveChanged:
                 command=f"git diff origin/{self.base_ref} --name-only", chdir=self.collection_path
             )
             self.files = [PosixPath(p) for p in stdout.split("\n") if p]
+            print(f"---- [{self.collection_name}]: changed files: \n{self.files}")
         return self.files
 
     def targets(self) -> Generator[str, None, None]:
