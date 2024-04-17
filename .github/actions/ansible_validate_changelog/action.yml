@@ -37,11 +37,7 @@ runs:
         --custom-paths ${{ inputs.custom_paths }}
       shell: bash
       working-directory: ${{ inputs.path }}
-<<<<<<< HEAD
       if: inputs.custom_paths != ''
-=======
-      if: ${{ inputs.custom_paths != "" }}
->>>>>>> 17b10f4 (Fix bug introduced by PR #151)
 
     - name: Validate changelog
       run: >-
@@ -49,8 +45,4 @@ runs:
         --ref ${{ inputs.base_ref }}
       shell: bash
       working-directory: ${{ inputs.path }}
-<<<<<<< HEAD
       if: inputs.custom_paths == ''
-=======
-      if: ${{ inputs.custom_paths == "" }}
->>>>>>> 17b10f4 (Fix bug introduced by PR #151)
