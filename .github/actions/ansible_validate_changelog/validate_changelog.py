@@ -9,6 +9,7 @@ import sys
 
 from collections import defaultdict
 from pathlib import Path
+from typing import Optional
 
 import yaml
 
@@ -29,10 +30,11 @@ def is_changelog_file(ref: str) -> bool:
     return bool(match)
 
 
-def is_module_or_plugin(ref: str) -> bool:
+def is_module_or_plugin(ref: str, custom_paths: Optional[list[str]]) -> bool:
     """Check if a file is a module or plugin.
 
     :param ref: the file to be checked
+    :param custom_paths: additional paths to check changes in
     :returns: True if file is a module or plugin else False
     """
     prefix_list = (
@@ -59,6 +61,9 @@ def is_module_or_plugin(ref: str) -> bool:
         "playbooks/",
         "meta/runtime.yml",
     )
+    if custom_paths:
+        if any(ref.startswith(x) for x in custom_paths):
+            return True
     return ref.startswith(prefix_list)
 
 
@@ -71,6 +76,7 @@ def is_documentation_file(ref: str) -> bool:
     prefix_list = (
         "docs/",
         "plugins/doc_fragments",
+        "examples",
     )
     return ref.startswith(prefix_list)
 
@@ -96,17 +102,18 @@ def is_release_pr(changes: dict[str, list[str]]) -> bool:
     return True
 
 
-def is_changelog_needed(changes: dict[str, list[str]]) -> bool:
+def is_changelog_needed(changes: dict[str, list[str]], custom_paths: Optional[list[str]]) -> bool:
     """Determine whether a changelog fragment is necessary.
 
     :param changes: A dictionary keyed on change status (A, M, D, etc.) of lists of changed files
+    :param custom_paths: additional paths to check changes in
     :returns: True if a changelog fragment is not required for this PR else False
     """
     # Changes to existing plugins or modules require a changelog
     # Changelog entries are not needed for new plugins or modules
     # https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html#generating-changelogs
     modifications = changes["M"] + changes["D"]
-    if any(is_module_or_plugin(x) for x in modifications):
+    if any(is_module_or_plugin(x, custom_paths) for x in modifications):
         return True
 
     return False
@@ -205,10 +212,11 @@ def list_files(ref: str) -> dict[str, list[str]]:
     return changes
 
 
-def main(ref: str) -> None:
+def main(ref: str, custom_paths: Optional[list[str]]) -> None:
     """Run the script.
 
     :param ref: The pull request base ref
+    :param custom_paths: additional paths to check changes in
     """
     changes = list_files(ref)
     if changes:
@@ -219,7 +227,7 @@ def main(ref: str) -> None:
         changelog = [x for x in changes["A"] if is_changelog_file(x)]
         logger.info("changelog files -> %s", changelog)
         if not changelog:
-            if is_changelog_needed(changes):
+            if is_changelog_needed(changes, custom_paths):
                 logger.error(
                     "Missing changelog fragment. This is not required"
                     " only if PR adds new modules and plugins or contain"
@@ -241,9 +249,19 @@ def main(ref: str) -> None:
     sys.exit(0)
 
 
+def comma_separated_list(arg: str) -> list[str]:
+    """Parse a string into a list of string.
+
+    :param arg: The string list to parse
+    :returns: A list of string
+    """
+    return arg.split(",")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Validate changelog file from new commit")
     parser.add_argument("--ref", required=True, help="Pull request base ref")
+    parser.add_argument("--custom-paths", type=comma_separated_list)
 
     args = parser.parse_args()
-    main(args.ref)
+    main(args.ref, args.custom_paths)
