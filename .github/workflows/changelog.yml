@@ -22,6 +22,6 @@ jobs:
           fetch-depth: "0"
 
       - name: Validate changelog
-        uses: ansible-network/github_actions/.github/actions/ansible_validate_changelog@main
+        uses: abikouo/github_actions/.github/actions/ansible_validate_changelog@dbg_04172024
         with:
           custom_paths: ${{ inputs.custom_paths }}
